@@ -125,3 +125,76 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}
+
+/* react-colorful overrides */
+
+/* gradient-picker-one styles */
+
+.gradient-picker-one .react-colorful {
+  width: 100%;
+  min-width: 232px;
+  min-height: 232px;
+  border: 2px solid black;
+  border-radius: 8px;
+}
+
+.gradient-picker-one .react-colorful__hue,
+.gradient-picker-one .react-colorful__alpha {
+  display: none;
+}
+
+.gradient-picker-one .react-colorful__saturation {
+  border: unset;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: inset 0 0 0px 2px #ffffff;
+}
+
+.gradient-picker-one .react-colorful__saturation-pointer {
+  box-shadow: 0 0 0 2px #232329;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  position: relative;
+}
+
+/* gradient-picker-two styles*/
+
+.gradient-picker-two .react-colorful {
+  gap: 1.5rem;
+  width: 100%;
+  height: fit-content;
+}
+
+.gradient-picker-two .react-colorful__saturation {
+  display: none;
+}
+
+.gradient-picker-two .react-colorful__hue,
+.gradient-picker-two .react-colorful__alpha {
+  height: 2rem;
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px #ffffff;
+}
+
+.gradient-picker-two .react-colorful__pointer {
+  border-radius: 8px;
+  width: 0.8rem;
+  height: 2.2rem;
+  box-shadow: 0 0 0 2px #232329;
+  outline: 0 solid rgba(35, 35, 41, 0.2509803922);
+  border: 2px solid #fff;
+  transition: outline-width 0.3s ease-in-out;
+}
