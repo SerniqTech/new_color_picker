@@ -5,15 +5,21 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { HiEyeDropper } from "react-icons/hi2";
 
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { MdLinearScale } from "react-icons/md";
-import { GiRadialBalance } from "react-icons/gi";
 import LinearKnob from "./LinearKnob";
-import { cn } from "@/lib/utils";
+import LinearRadialToggle from "./LinearRadialToggle";
 import { useState } from "react";
+import GradientStopRow from "./GradientStopRow";
+import UploadImagePanel from "./UploadImagePanel";
+
+export enum GradientType {
+  LINEAR = "LINEAR",
+  RADIAL = "RADIAL",
+}
 
 export default function CreateGradient() {
-  const [typeOfGradient, setTypeOfGradient] = useState("LINEAR");
+  const [typeOfGradient, setTypeOfGradient] = useState<GradientType>(
+    GradientType.LINEAR
+  );
 
   return (
     <div className="flex flex-col md:flex-row">
@@ -56,27 +62,41 @@ export default function CreateGradient() {
         </div>
       </div>
       <div className="w-full border-b sm:w-px sm:border-r bg-gray-50 my-6 sm:mx-6 sm:my-0"></div>
-      <div className="p-2 flex justify-between items-start">
-        <ToggleGroup
-          size="sm"
-          type="single"
-          variant="outline"
-          defaultValue={typeOfGradient}
-          onValueChange={(val) => setTypeOfGradient(val)}
-        >
-          <ToggleGroupItem value="LINEAR" aria-label="Toggle linear">
-            <MdLinearScale /> Linear
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="RADIAL"
-            aria-label="Toggle radial"
-            className={cn("data-[spacing=0]:data-[variant=outline]:border-l")}
-          >
-            <GiRadialBalance /> Radial
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <LinearKnob typeOfGradient={typeOfGradient} />
+      <div className="flex flex-col gap-6">
+        <div className="p-2 flex justify-between items-start">
+          <LinearRadialToggle
+            typeOfGradient={typeOfGradient}
+            setTypeOfGradient={setTypeOfGradient}
+          />
+          <LinearKnob typeOfGradient={typeOfGradient} />
+        </div>
+        <div>
+          <div className="text-muted-foreground mb-2">Stops</div>
+          <GradientStopRow
+            color="#937373"
+            position={0}
+            isActive
+            onColorClick={() => {}}
+            onColorChange={() => {}}
+            onPositionChange={() => {}}
+            onRemove={() => {}}
+          />
+          <GradientStopRow
+            color="#937373"
+            position={0}
+            onColorClick={() => {}}
+            onColorChange={() => {}}
+            onPositionChange={() => {}}
+            onRemove={() => {}}
+          />
+        </div>
       </div>
+      <div className="w-full border-b sm:w-px sm:border-r bg-gray-50 my-6 sm:mx-6 sm:my-0"></div>
+      <UploadImagePanel
+        onFileSelect={(file) => {
+          console.log(file);
+        }}
+      />
     </div>
   );
 }
