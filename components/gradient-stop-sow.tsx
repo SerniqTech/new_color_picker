@@ -15,6 +15,8 @@ type GradientStopRowProps = {
   onRemove?: () => void;
 };
 
+
+
 export default function GradientStopRow({
   color,
   position,
@@ -36,7 +38,7 @@ export default function GradientStopRow({
         type="button"
         aria-label="Change color"
         onClick={onColorClick}
-        className="relative h-10 w-10 rounded-md border-2 border-white shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        className="relative h-8 w-8 rounded-md border-2 border-white shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         style={{ backgroundColor: color }}
       >
         <span className="pointer-events-none absolute inset-0 rounded-md ring-1 ring-black/10" />

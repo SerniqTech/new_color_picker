@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, ChangeEvent } from "react";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import { GradientType } from "./gradient-editor";
 
-type LinearKnobProps = {
-  typeOfGradient: string;
+type GradientAngleProps = {
+  type: GradientType;
 };
 
-export default function LinearKnob({ typeOfGradient }: LinearKnobProps) {
+export default function GradientAngle({ type }: GradientAngleProps) {
   const knobRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const [angle, setAngle] = useState(0);
@@ -47,13 +48,13 @@ export default function LinearKnob({ typeOfGradient }: LinearKnobProps) {
     };
   }, [dragging]);
 
-  const radius = 14;
+  const radius = 13;
   const rad = ((angle - 90) * Math.PI) / 180;
 
   const handleX = radius * Math.cos(rad);
   const handleY = radius * Math.sin(rad);
 
-  const disableLinearDail = typeOfGradient === "RADIAL";
+  const disableLinearDail = type === GradientType.RADIAL;
 
   const handleOnchange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -62,11 +63,11 @@ export default function LinearKnob({ typeOfGradient }: LinearKnobProps) {
   };
 
   return (
-    <div className="flex">
+    <div className="flex gap-2">
       <div
         ref={knobRef}
         className={cn(
-          "border border-muted min-w-10 max-w-10 min-h-10 max-h-10 rounded-full relative",
+          "border border-muted min-w-9 max-w-9 min-h-9 max-h-9 rounded-full relative",
           disableLinearDail
             ? "pointer-events-none border-muted"
             : "border-primary cursor-pointer"
@@ -91,7 +92,7 @@ export default function LinearKnob({ typeOfGradient }: LinearKnobProps) {
       </div>
       <Input
         type="number"
-        className="p-2 max-w-26"
+        className="px-2 py-0 max-w-12"
         value={Math.floor(angle)}
         onChange={handleOnchange}
         disabled={disableLinearDail}

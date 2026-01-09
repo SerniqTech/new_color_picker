@@ -2,15 +2,15 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t bg-background px-8 md:px-16 lg:px-32">
-      <div className="mx-auto max-w-7xl px-4 py-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="mt-24 border-t bg-background px-6 md:px-12 lg:px-24">
+      <div className="mx-auto max-w-7xl py-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Left */}
-        <p className="text-sm text-muted-foreground">
+        <p className="flex justify-center sm:justify-start text-xs text-muted-foreground">
           © {new Date().getFullYear()} ChromaSnap. All rights reserved.
         </p>
 
         {/* Right */}
-        <div className="flex items-center gap-6 text-sm">
+        <div className="flex items-center justify-center sm:justify-end gap-6 text-sm">
           <Link
             href="#"
             className="text-muted-foreground hover:text-foreground transition-colors"

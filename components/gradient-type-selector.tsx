@@ -1,25 +1,24 @@
 import { cn } from "@/lib/utils";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { GradientType } from "./CreateGradient";
+import { GradientType } from "./gradient-editor";
 
-type LinearRadialToggleProps = {
-  typeOfGradient: GradientType;
-  setTypeOfGradient: React.Dispatch<React.SetStateAction<GradientType>>;
+type GradientTypeSelectorProps = {
+  type: GradientType;
+  onTypeChange: (t: GradientType) => void;
 };
 
-export default function LinearRadialToggle({
-  typeOfGradient,
-  setTypeOfGradient,
-}: LinearRadialToggleProps) {
+export default function GradientTypeSelector({
+  type,
+  onTypeChange,
+}: GradientTypeSelectorProps) {
   return (
     <ToggleGroup
-      size="sm"
       type="single"
       variant="outline"
-      defaultValue={typeOfGradient}
+      defaultValue={type}
       onValueChange={(val) => {
         if (!val) return;
-        setTypeOfGradient(val as GradientType);
+        onTypeChange(val as GradientType);
       }}
     >
       <ToggleGroupItem value={GradientType.LINEAR} aria-label="Toggle linear">

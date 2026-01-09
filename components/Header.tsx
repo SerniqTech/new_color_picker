@@ -39,7 +39,7 @@ export default function Header() {
   const { label, icon: Icon } = BROWSER_CTA[browser];
 
   return (
-    <header className="w-full min-h-16 bg-white fixed top-0 left-0 right-0 z-50 shadow-sm px-8 md:px-16 lg:px-32 py-2 flex justify-between items-center">
+    <header className="w-full min-h-16 bg-white fixed top-0 left-0 right-0 z-50 shadow-sm px-6 md:px-12 lg:px-24 py-2 flex justify-between items-center">
       <Link
         href="/"
         className="flex items-center gap-2 justify-center sm:justify-start"

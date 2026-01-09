@@ -1,12 +1,12 @@
-import WhytoChoose from "@/components/WhytoChoose";
-import Features from "@/components/Features";
-import UseCasesAndGettingStarted from "@/components/UseCasesAndGettingStarted";
-import MainColorSelectionSection from "@/components/MainColorSelectionSection";
+import WhytoChoose from "@/components/why-to-choose";
+import Features from "@/components/features";
+import UseCasesAndGettingStarted from "@/components/use-cases-and-getting-started";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   return (
     <div className="flex gap-8 flex-col items-center justify-center">
-      <MainColorSelectionSection/>
+      <Hero />
       <WhytoChoose />
       <Features />
       <UseCasesAndGettingStarted />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FiUpload, FiImage } from "react-icons/fi";
+import { FiUpload } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ export default function UploadImagePanel({
   };
 
   return (
-    <section className="space-y-6">
+    <section className="px-4 max-w-lg">
       {/* Top buttons */}
       <div className="flex gap-2">
         <Button size='sm' variant="secondary" disabled>
@@ -38,7 +38,7 @@ export default function UploadImagePanel({
       </div>
 
       {/* Upload area */}
-      <div className="space-y-2">
+      <div className="pt-4 space-y-2">
         <p className="text-sm text-muted-foreground">Upload image</p>
 
         <div
@@ -62,13 +62,13 @@ export default function UploadImagePanel({
             handleFiles(e.dataTransfer.files);
           }}
           className={cn(
-            "flex h-[360px] cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed transition",
+            "flex h-[200px] cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed transition",
             isDragging ? "border-blue-500 bg-blue-50" : "border-muted"
           )}
         >
-          <p className="text-lg font-medium">Drag and drop an image here</p>
+          <p className="text-sm text-muted-foreground">Drag and drop an image here</p>
 
-          <p className="text-muted-foreground">or</p>
+          <p className="text-sm text-muted-foreground">or</p>
 
           <Button
             type="button"
@@ -79,7 +79,6 @@ export default function UploadImagePanel({
             Select image file
           </Button>
 
-          <FiImage className="absolute bottom-6 right-6 h-6 w-6 text-muted-foreground/40" />
         </div>
 
         {/* Hidden input */}
