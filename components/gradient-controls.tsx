@@ -1,6 +1,6 @@
 import { GradientType } from "./gradient-editor";
 import GradientTypeSelector from "./gradient-type-selector";
-import GradientAngle from "./gradient-Angle";
+import GradientAngle from "./gradient-angle";
 import GradientStopRow from "./gradient-stop-sow";
 
 const colorStops = [
