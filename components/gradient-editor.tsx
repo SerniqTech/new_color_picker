@@ -24,7 +24,7 @@ export function GradientEditor() {
     <div>
       {/* Gradient Preview */}
       <div className="pb-6">
-        <div className="h-36 rounded-sm border bg-linear-to-r from-cyan-300 to-cyan-200 relative"></div>
+        <div className="h-36 rounded-lg border bg-linear-to-r from-cyan-300 to-cyan-200 relative"></div>
       </div>
 
       {/* Main Content */}

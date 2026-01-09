@@ -4,6 +4,7 @@ import { Input } from "./ui/input";
 import { PiEyedropperLight } from "react-icons/pi";
 import { hexToRgba, rgbaToHex, screenEyePicker } from "@/lib/color-utils";
 import { ChangeEvent, useEffect, useState } from "react";
+import GradientAdjustableStrip from "./gradient-adjustable-strip";
 
 type PickerPanelProps = {
   color: RgbaColor;
@@ -48,6 +49,7 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
 
   return (
     <section className="max-w-xl px-4">
+      <GradientAdjustableStrip/>
       <h3 className="text-sm text-muted-foreground mb-2">Picker</h3>
 
       <div className="flex flex-col sm:flex-row gap-6">
