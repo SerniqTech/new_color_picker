@@ -60,8 +60,8 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
         <div className="flex-1 space-y-4">
           <div>
             <label className="text-xs text-muted-foreground">HEX</label>
-            <div className="flex gap-2">
-              <Input value={hexValue} onChange={handleHexChange} />
+            <div className="flex justify-between gap-2">
+              <Input className="w-24" value={hexValue} onChange={handleHexChange} />
               <Button
                 size="icon"
                 variant="outline"
@@ -76,8 +76,9 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
           <div className="grid grid-cols-4 gap-2">
             {CHANNELS.map((c) => (
               <div key={c}>
-                <label className="text-xs text-muted-foreground">{c}</label>
+                <label className="text-xs text-muted-foreground">{c.toUpperCase()}</label>
                 <Input
+                  className="p-2"
                   type="number"
                   disabled={c === "a"}
                   value={c === "a" ? Math.floor(color[c] * 100) : color[c]}
