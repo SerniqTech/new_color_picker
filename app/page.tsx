@@ -1,7 +1,7 @@
 import WhytoChoose from "@/components/why-to-choose";
 import Features from "@/components/features";
 import UseCasesAndGettingStarted from "@/components/use-cases-and-getting-started";
-import Hero from "@/components/Hero";
+import Hero from "@/components/hero";
 
 export default function Home() {
   return (
