@@ -1,38 +1,32 @@
 "use client";
 
-import { useRef, useState, createRef, MouseEvent, useEffect } from "react";
+import { useRef, useState, MouseEvent, useLayoutEffect } from "react";
 import Draggable from "react-draggable";
 import { Input } from "./ui/input";
 
 type Stop = {
   id: string;
-  ref: React.RefObject<HTMLDivElement | null>;
   x: number;
+  percentPosition: number;
 };
 
-const HANDLE_WIDTH = 16;
+const pxToPercent = (x: number, stripWidth: number) =>
+  Math.round((x / stripWidth) * 100);
+const percentToPx = (percent: number, stripWidth: number) =>
+  (percent / 100) * stripWidth;
 
 export default function GradientAdjustableStrip() {
-  const [stops, setStops] = useState<Stop[]>([
-    {
-      id: crypto.randomUUID(),
-      ref: createRef<HTMLDivElement>(),
-      x: 0,
-    },
-  ]);
+  const [stops, setStops] = useState<Stop[]>([]);
+  const [stripWidth, setStripWidth] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!stripRef.current) return;
 
     const width = stripRef.current.clientWidth;
-
-    setStops((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        ref: createRef<HTMLDivElement>(),
-        x: width,
-      },
+    setStripWidth(stripRef.current.clientWidth);
+    setStops([
+      { id: crypto.randomUUID(), x: 0, percentPosition: 0 },
+      { id: crypto.randomUUID(), x: width, percentPosition: 100 },
     ]);
   }, []);
 
@@ -44,16 +38,16 @@ export default function GradientAdjustableStrip() {
 
     const rect = stripRef.current.getBoundingClientRect();
 
-    const rawX = e.clientX - rect.left - HANDLE_WIDTH / 2;
+    const rawX = e.clientX - rect.left;
 
-    const clampedX = Math.max(0, Math.min(rawX, rect.width - HANDLE_WIDTH));
+    const clampedX = Math.max(0, Math.min(rawX, rect.width));
 
     setStops((prev) => [
       ...prev,
       {
         id: crypto.randomUUID(),
-        ref: createRef<HTMLDivElement>(),
         x: clampedX,
+        percentPosition: pxToPercent(clampedX, stripWidth),
       },
     ]);
   };
@@ -65,21 +59,62 @@ export default function GradientAdjustableStrip() {
       className="flex items-center relative mb-12 h-8 w-full bg-amber-800 rounded-lg shadow-[0_0_0_2px_#000] before-overlay"
     >
       {stops.map((stop) => (
-        <Draggable
+        <GradientStop
           key={stop.id}
-          axis="x"
-          bounds="parent"
-          nodeRef={stop.ref}
-          defaultPosition={{ x: stop.x, y: 0 }}
-        >
-          <div
-            ref={stop.ref}
-            className="absolute h-11 w-4 rounded-xl bg-pink-200 border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-ew-resize -mx-2"
-          >
-            <Input className="absolute top-12 -left-3.5 px-2 w-10" />
-          </div>
-        </Draggable>
+          stop={stop}
+          onStopInput={(id, val) => {
+            setStops((s) =>
+              s.map((s) =>
+                s.id === id
+                  ? {
+                      ...s,
+                      x: percentToPx(val, stripWidth),
+                      percentPosition: val,
+                    }
+                  : s
+              )
+            );
+          }}
+          onDrag={(id, x) => {
+            const percentPosition = pxToPercent(x, stripWidth);
+            setStops((s) =>
+              s.map((s) => (s.id === id ? { ...s, x, percentPosition } : s))
+            );
+          }}
+        />
       ))}
     </div>
   );
 }
+
+type GradientStopProps = {
+  stop: Stop;
+  onDrag: (id: string, x: number) => void;
+  onStopInput: (id: string, val: number) => void;
+};
+
+const GradientStop = ({ stop, onDrag, onStopInput }: GradientStopProps) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <Draggable
+      key={stop.id}
+      axis="x"
+      bounds="parent"
+      nodeRef={nodeRef}
+      position={{ x: stop.x, y: 0 }}
+      onDrag={(_, data) => onDrag(stop.id, data.x)}
+    >
+      <div
+        ref={nodeRef}
+        className="absolute h-11 w-4 rounded-xl bg-pink-200 border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-move -mx-2"
+      >
+        <Input
+          value={stop.percentPosition}
+          onChange={(e) => onStopInput(stop.id, Number(e.target.value))}
+          className="absolute top-12 -left-3.5 px-0 w-10 text-center"
+        />
+      </div>
+    </Draggable>
+  );
+};
