@@ -8,6 +8,8 @@ type Stop = {
   id: string;
   x: number;
   percentPosition: number;
+  inputValue: string;
+  color: string;
 };
 
 const pxToPercent = (x: number, stripWidth: number) =>
@@ -25,8 +27,20 @@ export default function GradientAdjustableStrip() {
     const width = stripRef.current.clientWidth;
     setStripWidth(stripRef.current.clientWidth);
     setStops([
-      { id: crypto.randomUUID(), x: 0, percentPosition: 0 },
-      { id: crypto.randomUUID(), x: width, percentPosition: 100 },
+      {
+        id: crypto.randomUUID(),
+        x: 0,
+        percentPosition: 0,
+        inputValue: "0",
+        color: "#00FF00",
+      },
+      {
+        id: crypto.randomUUID(),
+        x: width,
+        percentPosition: 100,
+        inputValue: "100",
+        color: "#FF0000",
+      },
     ]);
   }, []);
 
@@ -48,6 +62,8 @@ export default function GradientAdjustableStrip() {
         id: crypto.randomUUID(),
         x: clampedX,
         percentPosition: pxToPercent(clampedX, stripWidth),
+        inputValue: pxToPercent(clampedX, stripWidth).toString(),
+        color: "#00FF00",
       },
     ]);
   };
@@ -63,13 +79,27 @@ export default function GradientAdjustableStrip() {
           key={stop.id}
           stop={stop}
           onStopInput={(id, val) => {
+            const valConvertedNumber = Number(val);
+            if (
+              val === "" ||
+              Number.isNaN(valConvertedNumber) ||
+              valConvertedNumber > 100
+            ) {
+              setStops((s) =>
+                s.map((s) => (s.id === id ? { ...s, inputValue: val } : s))
+              );
+              return;
+            }
+
             setStops((s) =>
               s.map((s) =>
                 s.id === id
                   ? {
                       ...s,
-                      x: percentToPx(val, stripWidth),
-                      percentPosition: val,
+                      x: percentToPx(valConvertedNumber, stripWidth),
+                      percentPosition: valConvertedNumber,
+                      inputValue: val,
+                      color: "#00FF00",
                     }
                   : s
               )
@@ -90,7 +120,7 @@ export default function GradientAdjustableStrip() {
 type GradientStopProps = {
   stop: Stop;
   onDrag: (id: string, x: number) => void;
-  onStopInput: (id: string, val: number) => void;
+  onStopInput: (id: string, val: string) => void;
 };
 
 const GradientStop = ({ stop, onDrag, onStopInput }: GradientStopProps) => {
@@ -107,11 +137,12 @@ const GradientStop = ({ stop, onDrag, onStopInput }: GradientStopProps) => {
     >
       <div
         ref={nodeRef}
-        className="absolute h-11 w-4 rounded-xl bg-pink-200 border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-move -mx-2"
+        className="absolute h-11 w-4 rounded-xl border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-move -mx-2"
+        style={{ backgroundColor: stop.color }}
       >
         <Input
-          value={stop.percentPosition}
-          onChange={(e) => onStopInput(stop.id, Number(e.target.value))}
+          value={stop.inputValue}
+          onChange={(e) => onStopInput(stop.id, e.target.value)}
           className="absolute top-12 -left-3.5 px-0 w-10 text-center"
         />
       </div>
