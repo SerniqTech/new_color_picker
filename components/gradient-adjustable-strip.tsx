@@ -17,6 +17,20 @@ const pxToPercent = (x: number, stripWidth: number) =>
 const percentToPx = (percent: number, stripWidth: number) =>
   (percent / 100) * stripWidth;
 
+const buildLinearGradient = (stops: Stop[]) => {
+  if (stops.length === 0) return "none";
+
+  const sorted = [...stops].sort(
+    (a, b) => a.percentPosition - b.percentPosition
+  );
+
+  const colorStops = sorted
+    .map((s) => `${s.color} ${s.percentPosition}%`)
+    .join(", ");
+
+  return `linear-gradient(to right, ${colorStops})`;
+};
+
 export default function GradientAdjustableStrip() {
   const [stops, setStops] = useState<Stop[]>([]);
   const [stripWidth, setStripWidth] = useState(0);
@@ -63,7 +77,7 @@ export default function GradientAdjustableStrip() {
         x: clampedX,
         percentPosition: pxToPercent(clampedX, stripWidth),
         inputValue: pxToPercent(clampedX, stripWidth).toString(),
-        color: "#00FF00",
+        color: "#0000FF",
       },
     ]);
   };
@@ -72,7 +86,8 @@ export default function GradientAdjustableStrip() {
     <div
       ref={stripRef}
       onClick={handleStripClick}
-      className="flex items-center relative mb-12 h-8 w-full bg-amber-800 rounded-lg shadow-[0_0_0_2px_#000] before-overlay"
+      className="flex items-center relative mb-12 h-8 w-full rounded-lg shadow-[0_0_0_2px_#000] before-overlay"
+      style={{ backgroundImage: buildLinearGradient(stops) }}
     >
       {stops.map((stop) => (
         <GradientStop
@@ -108,7 +123,16 @@ export default function GradientAdjustableStrip() {
           onDrag={(id, x) => {
             const percentPosition = pxToPercent(x, stripWidth);
             setStops((s) =>
-              s.map((s) => (s.id === id ? { ...s, x, percentPosition } : s))
+              s.map((s) =>
+                s.id === id
+                  ? {
+                      ...s,
+                      x,
+                      percentPosition,
+                      inputValue: percentPosition.toString(),
+                    }
+                  : s
+              )
             );
           }}
         />
