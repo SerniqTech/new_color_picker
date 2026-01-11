@@ -94,6 +94,7 @@ const GradientStop = ({
           onChange={(e) => {
             const val = e.target.value;
             setInputValue(val);
+            if (val === "") return;
             const num = Number(val);
             if (!Number.isNaN(num)) {
               onChangePercent(Math.min(100, Math.max(0, num)));
