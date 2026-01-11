@@ -1,4 +1,5 @@
 import { RgbaColor } from "react-colorful";
+import { Stop } from "@/store/gradient-editor.store";
 
 export function rgbaToHex({ r, g, b }: RgbaColor) {
   return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
@@ -33,3 +34,18 @@ export async function screenEyePicker(): Promise<RgbaColor | null> {
     return null;
   }
 }
+
+export const pxToPercent = (x: number, width: number) =>
+  Math.round((x / width) * 100);
+export const percentToPx = (percent: number, width: number) =>
+  (percent / 100) * width;
+
+export const buildLinearGradient = (stops: Stop[]) => {
+  if (stops.length === 0) return "none";
+
+  const sorted = [...stops].sort((a, b) => a.percent - b.percent);
+
+  const colorStops = sorted.map((s) => `${s.color} ${s.percent}%`).join(", ");
+
+  return `linear-gradient(to right, ${colorStops})`;
+};

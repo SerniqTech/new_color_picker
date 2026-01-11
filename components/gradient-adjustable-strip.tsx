@@ -3,62 +3,22 @@
 import { useRef, useState, MouseEvent, useLayoutEffect } from "react";
 import Draggable from "react-draggable";
 import { Input } from "./ui/input";
-
-type Stop = {
-  id: string;
-  x: number;
-  percentPosition: number;
-  inputValue: string;
-  color: string;
-};
-
-const pxToPercent = (x: number, stripWidth: number) =>
-  Math.round((x / stripWidth) * 100);
-const percentToPx = (percent: number, stripWidth: number) =>
-  (percent / 100) * stripWidth;
-
-const buildLinearGradient = (stops: Stop[]) => {
-  if (stops.length === 0) return "none";
-
-  const sorted = [...stops].sort(
-    (a, b) => a.percentPosition - b.percentPosition
-  );
-
-  const colorStops = sorted
-    .map((s) => `${s.color} ${s.percentPosition}%`)
-    .join(", ");
-
-  return `linear-gradient(to right, ${colorStops})`;
-};
+import { useGradientStops } from "@/store/gradient-editor.store";
+import {
+  percentToPx,
+  pxToPercent,
+  buildLinearGradient,
+} from "@/lib/color-utils";
 
 export default function GradientAdjustableStrip() {
-  const [stops, setStops] = useState<Stop[]>([]);
+  const { stops, addStop, moveStop } = useGradientStops();
+  const stripRef = useRef<HTMLDivElement>(null);
   const [stripWidth, setStripWidth] = useState(0);
 
   useLayoutEffect(() => {
     if (!stripRef.current) return;
-
-    const width = stripRef.current.clientWidth;
     setStripWidth(stripRef.current.clientWidth);
-    setStops([
-      {
-        id: crypto.randomUUID(),
-        x: 0,
-        percentPosition: 0,
-        inputValue: "0",
-        color: "#00FF00",
-      },
-      {
-        id: crypto.randomUUID(),
-        x: width,
-        percentPosition: 100,
-        inputValue: "100",
-        color: "#FF0000",
-      },
-    ]);
   }, []);
-
-  const stripRef = useRef<HTMLDivElement>(null);
 
   const handleStripClick = (e: MouseEvent<HTMLDivElement>) => {
     if (!stripRef.current) return;
@@ -70,16 +30,7 @@ export default function GradientAdjustableStrip() {
 
     const clampedX = Math.max(0, Math.min(rawX, rect.width));
 
-    setStops((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        x: clampedX,
-        percentPosition: pxToPercent(clampedX, stripWidth),
-        inputValue: pxToPercent(clampedX, stripWidth).toString(),
-        color: "#0000FF",
-      },
-    ]);
+    addStop(pxToPercent(clampedX, stripWidth));
   };
 
   return (
@@ -92,49 +43,10 @@ export default function GradientAdjustableStrip() {
       {stops.map((stop) => (
         <GradientStop
           key={stop.id}
-          stop={stop}
-          onStopInput={(id, val) => {
-            const valConvertedNumber = Number(val);
-            if (
-              val === "" ||
-              Number.isNaN(valConvertedNumber) ||
-              valConvertedNumber > 100
-            ) {
-              setStops((s) =>
-                s.map((s) => (s.id === id ? { ...s, inputValue: val } : s))
-              );
-              return;
-            }
-
-            setStops((s) =>
-              s.map((s) =>
-                s.id === id
-                  ? {
-                      ...s,
-                      x: percentToPx(valConvertedNumber, stripWidth),
-                      percentPosition: valConvertedNumber,
-                      inputValue: val,
-                      color: "#00FF00",
-                    }
-                  : s
-              )
-            );
-          }}
-          onDrag={(id, x) => {
-            const percentPosition = pxToPercent(x, stripWidth);
-            setStops((s) =>
-              s.map((s) =>
-                s.id === id
-                  ? {
-                      ...s,
-                      x,
-                      percentPosition,
-                      inputValue: percentPosition.toString(),
-                    }
-                  : s
-              )
-            );
-          }}
+          color={stop.color}
+          percent={stop.percent}
+          stripWidth={stripWidth}
+          onChangePercent={(p) => moveStop(stop.id, p)}
         />
       ))}
     </div>
@@ -142,31 +54,52 @@ export default function GradientAdjustableStrip() {
 }
 
 type GradientStopProps = {
-  stop: Stop;
-  onDrag: (id: string, x: number) => void;
-  onStopInput: (id: string, val: string) => void;
+  color: string;
+  percent: number;
+  stripWidth: number;
+  onChangePercent: (percent: number) => void;
 };
 
-const GradientStop = ({ stop, onDrag, onStopInput }: GradientStopProps) => {
+const GradientStop = ({
+  color,
+  percent,
+  stripWidth,
+  onChangePercent,
+}: GradientStopProps) => {
   const nodeRef = useRef<HTMLDivElement>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  const x = percentToPx(percent, stripWidth);
 
   return (
     <Draggable
-      key={stop.id}
       axis="x"
       bounds="parent"
       nodeRef={nodeRef}
-      position={{ x: stop.x, y: 0 }}
-      onDrag={(_, data) => onDrag(stop.id, data.x)}
+      position={{ x, y: 0 }}
+      onDrag={(_, data) => onChangePercent(pxToPercent(data.x, stripWidth))}
     >
       <div
         ref={nodeRef}
         className="absolute h-11 w-4 rounded-xl border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-move -mx-2"
-        style={{ backgroundColor: stop.color }}
+        style={{ backgroundColor: color }}
       >
         <Input
-          value={stop.inputValue}
-          onChange={(e) => onStopInput(stop.id, e.target.value)}
+          value={isEditing ? inputValue : percent.toString()}
+          onFocus={() => {
+            setIsEditing(true);
+            setInputValue(percent.toString());
+          }}
+          onChange={(e) => {
+            const val = e.target.value;
+            setInputValue(val);
+            const num = Number(val);
+            if (!Number.isNaN(num)) {
+              onChangePercent(Math.min(100, Math.max(0, num)));
+            }
+          }}
+          onBlur={() => setIsEditing(false)}
           className="absolute top-12 -left-3.5 px-0 w-10 text-center"
         />
       </div>
