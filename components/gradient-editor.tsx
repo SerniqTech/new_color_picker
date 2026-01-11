@@ -5,6 +5,8 @@ import { PickerPanel } from "./picker-panel";
 import { GradientControls } from "./gradient-controls";
 import UploadImagePanel from "./upload-image-panel";
 import { RgbaColor } from "react-colorful";
+import { useGradientStops } from "@/store/gradient-editor.store";
+import { buildLinearGradient } from "@/lib/color-utils";
 
 export enum GradientType {
   LINEAR = "LINEAR",
@@ -12,6 +14,7 @@ export enum GradientType {
 }
 
 export function GradientEditor() {
+  const { stops } = useGradientStops();
   const [color, setColor] = useState<RgbaColor>({
     r: 20,
     g: 230,
@@ -24,7 +27,10 @@ export function GradientEditor() {
     <div>
       {/* Gradient Preview */}
       <div className="pb-6">
-        <div className="h-36 rounded-lg border bg-linear-to-r from-cyan-300 to-cyan-200 relative"></div>
+        <div
+          className="h-36 rounded-lg border relative"
+          style={{ backgroundImage: buildLinearGradient(stops) }}
+        />
       </div>
 
       {/* Main Content */}

@@ -4,28 +4,28 @@ import { IoMdClose } from "react-icons/io";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useGradientStops } from "@/store/gradient-editor.store";
 
 type GradientStopRowProps = {
+  id: string;
   color: string;
-  position: number;
+  percent: number;
   isActive?: boolean;
   onColorClick?: () => void;
   onColorChange?: (value: string) => void;
-  onPositionChange?: (value: number) => void;
   onRemove?: () => void;
 };
 
-
-
 export default function GradientStopRow({
+  id,
   color,
-  position,
+  percent,
   isActive = false,
   onColorClick,
   onColorChange,
-  onPositionChange,
   onRemove,
 }: GradientStopRowProps) {
+  const moveStop = useGradientStops((state) => state.moveStop);
   return (
     <div
       className={cn(
@@ -57,8 +57,15 @@ export default function GradientStopRow({
         type="number"
         min={0}
         max={100}
-        value={position}
-        onChange={(e) => onPositionChange?.(+e.target.value)}
+        value={percent}
+        onChange={(e) => {
+          const val = e.target.value;
+          if (val === "") return;
+          const num = Number(val);
+          if (!Number.isNaN(num)) {
+            moveStop(id, Math.min(100, Math.max(0, num)));
+          }
+        }}
         className="w-20"
       />
 
