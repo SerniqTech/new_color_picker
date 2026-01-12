@@ -10,6 +10,7 @@ export default function GradientTypeSelector() {
     <ToggleGroup
       type="single"
       variant="outline"
+      size='sm'
       value={type}
       onValueChange={(val) => {
         if (!val) return;

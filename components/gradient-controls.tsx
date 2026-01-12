@@ -6,12 +6,12 @@ import { useGradientStore } from "@/store/gradient-editor.store";
 export function GradientControls() {
   const stops = useGradientStore((s) => s.stops);
   return (
-    <section className="px-4 max-w-xs">
-      <div className="flex gap-6 justify-between items-start">
+    <section className="px-4 max-w-68">
+      <div className="flex gap-2 justify-between items-center">
         {/* Type */}
         <GradientTypeSelector />
         {/* Angle */}
-        <GradientAngle/>
+        <GradientAngle />
       </div>
 
       {/* Stops */}

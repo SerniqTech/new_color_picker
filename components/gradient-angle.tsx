@@ -45,7 +45,7 @@ export default function GradientAngle() {
     };
   }, [dragging]);
 
-  const radius = 13;
+  const radius = 11;
   const rad = ((angle - 90) * Math.PI) / 180;
 
   const handleX = radius * Math.cos(rad);
@@ -60,14 +60,14 @@ export default function GradientAngle() {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1 justify-center items-center">
       <div
         ref={knobRef}
         className={cn(
-          "border border-muted min-w-9 max-w-9 min-h-9 max-h-9 rounded-full relative",
+          "border border-muted min-w-8 max-w-8 min-h-8 max-h-8 rounded-full relative",
           disableLinearDail
             ? "pointer-events-none border-muted"
-            : "border-primary cursor-pointer"
+            : "border-primary"
         )}
         onMouseDown={(e) => {
           calculateAngle(e.clientX, e.clientY);
@@ -76,7 +76,7 @@ export default function GradientAngle() {
       >
         <div
           className={cn(
-            "min-w-2 min-h-2 max-w-2 rounded-full absolute",
+            "min-w-2 min-h-2 max-w-2 rounded-full select-none absolute",
             disableLinearDail ? "bg-muted" : "bg-primary"
           )}
           onMouseDown={() => setDragging(true)}
@@ -89,7 +89,7 @@ export default function GradientAngle() {
       </div>
       <Input
         type="number"
-        className="px-2 py-0 max-w-12"
+        className="p-0 text-center max-h-8 max-w-12"
         value={Math.floor(angle)}
         onChange={handleOnchange}
         disabled={disableLinearDail}
