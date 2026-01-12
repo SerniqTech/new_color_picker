@@ -14,7 +14,6 @@ type GradientStopRowProps = {
   percent: number;
   onColorClick?: () => void;
   onColorChange?: (value: string) => void;
-  onRemove?: () => void;
 };
 
 export default function GradientStopRow({
@@ -23,11 +22,11 @@ export default function GradientStopRow({
   percent,
   onColorClick,
   onColorChange,
-  onRemove,
 }: GradientStopRowProps) {
   const isActive = useGradientStore((s) => s.activeStop === id);
   const setActiveStop = useGradientStore((s) => s.setActiveStop);
   const moveStop = useGradientStore((s) => s.moveStop);
+  const removeStop = useGradientStore((s) => s.removeStop);
 
   const hexColor = rgbaToHex(color);
   return (
@@ -78,7 +77,10 @@ export default function GradientStopRow({
       <Button
         variant="ghost"
         size="icon"
-        onClick={onRemove}
+        onClick={(e) => {
+          e.stopPropagation();
+          removeStop(id);
+        }}
         aria-label="Remove stop"
         className="text-muted-foreground hover:text-destructive"
       >

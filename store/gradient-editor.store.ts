@@ -3,8 +3,8 @@ import { create } from "zustand";
 
 export type Stop = {
   id: string;
-  percent: number; // 0–100
-  color: RgbaColor; // hex
+  percent: number;
+  color: RgbaColor;
 };
 
 export enum GradientType {
@@ -21,6 +21,7 @@ type GradientEditorState = {
   setActiveStop: (id: string) => void;
   setStopColor: (id: string, color: RgbaColor) => void;
   setType: (type: GradientType) => void;
+  removeStop: (id: string) => void;
 };
 
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
@@ -86,6 +87,20 @@ export const useGradientStore = create<GradientEditorState>((set) => ({
         stop.id === id ? { ...stop, color } : stop
       ),
     })),
+
+  removeStop: (id) =>
+    set((state) => {
+      if (!(state.stops.length > 2)) return state;
+
+      const stops = state.stops.filter((s) => s.id !== id);
+
+      console.log(stops);
+
+      return {
+        stops,
+        activeStop: state.activeStop === id ? stops[0].id : state.activeStop,
+      };
+    }),
 
   setType: (type) => set({ type }),
 }));
