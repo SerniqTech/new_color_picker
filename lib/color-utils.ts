@@ -45,7 +45,9 @@ export const buildLinearGradient = (stops: Stop[]) => {
 
   const sorted = [...stops].sort((a, b) => a.percent - b.percent);
 
-  const colorStops = sorted.map((s) => `${s.color} ${s.percent}%`).join(", ");
+  const colorStops = sorted
+    .map((s) => `${rgbaToHex(s.color)} ${s.percent}%`)
+    .join(", ");
 
   return `linear-gradient(to right, ${colorStops})`;
 };

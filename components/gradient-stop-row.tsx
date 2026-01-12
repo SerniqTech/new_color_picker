@@ -5,12 +5,13 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useGradientStops } from "@/store/gradient-editor.store";
+import { rgbaToHex } from "@/lib/color-utils";
+import { RgbaColor } from "react-colorful";
 
 type GradientStopRowProps = {
   id: string;
-  color: string;
+  color: RgbaColor;
   percent: number;
-  isActive?: boolean;
   onColorClick?: () => void;
   onColorChange?: (value: string) => void;
   onRemove?: () => void;
@@ -20,18 +21,19 @@ export default function GradientStopRow({
   id,
   color,
   percent,
-  isActive = false,
   onColorClick,
   onColorChange,
   onRemove,
 }: GradientStopRowProps) {
-  const moveStop = useGradientStops((state) => state.moveStop);
+  const { activeColor, moveStop, setActiveColor } = useGradientStops();
+  const hexColor = rgbaToHex(color);
   return (
     <div
       className={cn(
         "flex items-center gap-3 rounded-lg  p-1 transition",
-        isActive && "border-2 border-blue-500"
+        id === activeColor.id && "border-2 border-blue-500"
       )}
+      onClick={() => setActiveColor(id)}
     >
       {/* Color Swatch */}
       <button
@@ -39,14 +41,14 @@ export default function GradientStopRow({
         aria-label="Change color"
         onClick={onColorClick}
         className="relative h-8 w-8 rounded-md border-2 border-white shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: hexColor }}
       >
         <span className="pointer-events-none absolute inset-0 rounded-md ring-1 ring-black/10" />
       </button>
 
       {/* Hex Input */}
       <Input
-        value={color.toUpperCase()}
+        value={hexColor}
         onChange={(e) => onColorChange?.(e.target.value)}
         className="w-28 font-mono"
         spellCheck={false}

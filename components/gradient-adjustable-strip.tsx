@@ -8,6 +8,7 @@ import {
   percentToPx,
   pxToPercent,
   buildLinearGradient,
+  rgbaToHex,
 } from "@/lib/color-utils";
 
 export default function GradientAdjustableStrip() {
@@ -43,7 +44,7 @@ export default function GradientAdjustableStrip() {
       {stops.map((stop) => (
         <GradientStop
           key={stop.id}
-          color={stop.color}
+          color={rgbaToHex(stop.color)}
           percent={stop.percent}
           stripWidth={stripWidth}
           onChangePercent={(p) => moveStop(stop.id, p)}
