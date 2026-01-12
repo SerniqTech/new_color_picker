@@ -1,27 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { PickerPanel } from "./picker-panel";
 import { GradientControls } from "./gradient-controls";
 import UploadImagePanel from "./upload-image-panel";
-import { RgbaColor } from "react-colorful";
-import { useGradientStops } from "@/store/gradient-editor.store";
+import { useGradientStore } from "@/store/gradient-editor.store";
 import { buildLinearGradient } from "@/lib/color-utils";
 
-export enum GradientType {
-  LINEAR = "LINEAR",
-  RADIAL = "RADIAL",
-}
-
 export function GradientEditor() {
-  const { stops } = useGradientStops();
-  const [color, setColor] = useState<RgbaColor>({
-    r: 20,
-    g: 230,
-    b: 70,
-    a: 1,
-  });
-  const [type, setType] = useState<GradientType>(GradientType.LINEAR);
+  const { stops } = useGradientStore();
 
   return (
     <div>
@@ -35,8 +21,8 @@ export function GradientEditor() {
 
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x">
-        <PickerPanel color={color} onChange={setColor} />
-        <GradientControls type={type} onTypeChange={setType} />
+        <PickerPanel />
+        <GradientControls />
         <UploadImagePanel />
       </div>
     </div>

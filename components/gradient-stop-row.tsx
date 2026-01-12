@@ -4,7 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useGradientStops } from "@/store/gradient-editor.store";
+import { useGradientStore } from "@/store/gradient-editor.store";
 import { rgbaToHex } from "@/lib/color-utils";
 import { RgbaColor } from "react-colorful";
 
@@ -25,15 +25,18 @@ export default function GradientStopRow({
   onColorChange,
   onRemove,
 }: GradientStopRowProps) {
-  const { activeColor, moveStop, setActiveColor } = useGradientStops();
+  const isActive = useGradientStore((s) => s.activeStop === id);
+  const setActiveStop = useGradientStore((s) => s.setActiveStop);
+  const moveStop = useGradientStore((s) => s.moveStop);
+
   const hexColor = rgbaToHex(color);
   return (
     <div
       className={cn(
         "flex items-center gap-3 rounded-lg  p-1 transition",
-        id === activeColor.id && "border-2 border-blue-500"
+        isActive && "border-2 border-blue-500"
       )}
-      onClick={() => setActiveColor(id)}
+      onClick={() => setActiveStop(id)}
     >
       {/* Color Swatch */}
       <button

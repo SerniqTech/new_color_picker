@@ -1,24 +1,19 @@
 import { cn } from "@/lib/utils";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { GradientType } from "./gradient-editor";
+import { GradientType, useGradientStore } from "@/store/gradient-editor.store";
 
-type GradientTypeSelectorProps = {
-  type: GradientType;
-  onTypeChange: (t: GradientType) => void;
-};
+export default function GradientTypeSelector() {
+  const type = useGradientStore((s) => s.type);
+  const setType = useGradientStore((s) => s.setType);
 
-export default function GradientTypeSelector({
-  type,
-  onTypeChange,
-}: GradientTypeSelectorProps) {
   return (
     <ToggleGroup
       type="single"
       variant="outline"
-      defaultValue={type}
+      value={type}
       onValueChange={(val) => {
         if (!val) return;
-        onTypeChange(val as GradientType);
+        setType(val as GradientType);
       }}
     >
       <ToggleGroupItem value={GradientType.LINEAR} aria-label="Toggle linear">

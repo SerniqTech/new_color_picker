@@ -7,40 +7,52 @@ export type Stop = {
   color: RgbaColor; // hex
 };
 
+export enum GradientType {
+  LINEAR = "LINEAR",
+  RADIAL = "RADIAL",
+}
+
 type GradientEditorState = {
-  activeColor: Stop;
+  type: GradientType;
+  activeStop: string;
   stops: Stop[];
   addStop: (percent: number) => void;
   moveStop: (id: string, percent: number) => void;
-  setActiveColor: (id: string) => void;
+  setActiveStop: (id: string) => void;
+  setStopColor: (id: string, color: RgbaColor) => void;
+  setType: (type: GradientType) => void;
 };
 
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
 
-const INITIAL_START_COLOR = {
-  id: "start",
-  percent: 0,
-  color: {
-    r: 20,
-    g: 230,
-    b: 70,
-    a: 1,
-  },
-};
-const INITIAL_END_COLOR = {
-  id: "end",
-  percent: 100,
-  color: {
-    r: 210,
-    g: 230,
-    b: 70,
-    a: 1,
-  },
-};
+const START_ID = "start";
+const END_ID = "end";
 
-export const useGradientStops = create<GradientEditorState>((set) => ({
-  activeColor: INITIAL_START_COLOR,
-  stops: [INITIAL_START_COLOR, INITIAL_END_COLOR],
+export const useGradientStore = create<GradientEditorState>((set) => ({
+  type: GradientType.LINEAR,
+  activeStop: START_ID,
+  stops: [
+    {
+      id: START_ID,
+      percent: 0,
+      color: {
+        r: 20,
+        g: 230,
+        b: 70,
+        a: 1,
+      },
+    },
+    {
+      id: END_ID,
+      percent: 100,
+      color: {
+        r: 210,
+        g: 230,
+        b: 70,
+        a: 1,
+      },
+    },
+  ],
 
   addStop: (percent) =>
     set((state) => ({
@@ -66,11 +78,14 @@ export const useGradientStops = create<GradientEditorState>((set) => ({
       }),
     })),
 
-  setActiveColor: (id) =>
+  setActiveStop: (id) => set({ activeStop: id }),
+
+  setStopColor: (id, color) =>
     set((state) => ({
-      activeColor:
-        state.stops.find((stop) => stop.id === id) || INITIAL_START_COLOR,
+      stops: state.stops.map((stop) =>
+        stop.id === id ? { ...stop, color } : stop
+      ),
     })),
 
-  setColor: () => set(() => ({})),
+  setType: (type) => set({ type }),
 }));

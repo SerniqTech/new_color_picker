@@ -1,24 +1,17 @@
-import { GradientType } from "./gradient-editor";
 import GradientTypeSelector from "./gradient-type-selector";
 import GradientAngle from "./gradient-angle";
 import GradientStopRow from "./gradient-stop-row";
-import { useGradientStops } from "@/store/gradient-editor.store";
+import { useGradientStore } from "@/store/gradient-editor.store";
 
-export function GradientControls({
-  type,
-  onTypeChange,
-}: {
-  type: GradientType;
-  onTypeChange: (t: GradientType) => void;
-}) {
-  const stops = useGradientStops((state) => state.stops);
+export function GradientControls() {
+  const stops = useGradientStore((s) => s.stops);
   return (
     <section className="px-4 max-w-xs">
       <div className="flex gap-6 justify-between items-start">
         {/* Type */}
-        <GradientTypeSelector type={type} onTypeChange={onTypeChange} />
+        <GradientTypeSelector />
         {/* Angle */}
-        <GradientAngle type={type} />
+        <GradientAngle/>
       </div>
 
       {/* Stops */}

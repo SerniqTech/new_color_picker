@@ -3,7 +3,7 @@
 import { useRef, useState, MouseEvent, useLayoutEffect } from "react";
 import Draggable from "react-draggable";
 import { Input } from "./ui/input";
-import { useGradientStops } from "@/store/gradient-editor.store";
+import { useGradientStore } from "@/store/gradient-editor.store";
 import {
   percentToPx,
   pxToPercent,
@@ -12,7 +12,7 @@ import {
 } from "@/lib/color-utils";
 
 export default function GradientAdjustableStrip() {
-  const { stops, addStop, moveStop } = useGradientStops();
+  const { stops, addStop, moveStop } = useGradientStore();
   const stripRef = useRef<HTMLDivElement>(null);
   const [stripWidth, setStripWidth] = useState(0);
 
@@ -44,6 +44,7 @@ export default function GradientAdjustableStrip() {
       {stops.map((stop) => (
         <GradientStop
           key={stop.id}
+          stopId={stop.id}
           color={rgbaToHex(stop.color)}
           percent={stop.percent}
           stripWidth={stripWidth}
@@ -55,6 +56,7 @@ export default function GradientAdjustableStrip() {
 }
 
 type GradientStopProps = {
+  stopId: string;
   color: string;
   percent: number;
   stripWidth: number;
@@ -62,6 +64,7 @@ type GradientStopProps = {
 };
 
 const GradientStop = ({
+  stopId,
   color,
   percent,
   stripWidth,
@@ -70,6 +73,8 @@ const GradientStop = ({
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const isActive = useGradientStore((s) => s.activeStop === stopId);
+  const setActiveStop = useGradientStore((s) => s.setActiveStop);
 
   const x = percentToPx(percent, stripWidth);
 
@@ -84,7 +89,11 @@ const GradientStop = ({
       <div
         ref={nodeRef}
         className="absolute h-11 w-4 rounded-xl border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-move -mx-2"
-        style={{ backgroundColor: color }}
+        style={{
+          backgroundColor: color,
+          outline: isActive ? "6px solid rgba(0,0,0,0.2)" : "",
+        }}
+        onClick={() => setActiveStop(stopId)}
       >
         <Input
           value={isEditing ? inputValue : percent.toString()}
@@ -102,7 +111,7 @@ const GradientStop = ({
             }
           }}
           onBlur={() => setIsEditing(false)}
-          className="absolute top-12 -left-3.5 px-0 w-10 text-center"
+          className="absolute top-14 -left-3.5 px-0 w-10 text-center"
         />
       </div>
     </Draggable>

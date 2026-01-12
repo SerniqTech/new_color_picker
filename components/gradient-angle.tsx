@@ -1,16 +1,13 @@
 import { useState, useRef, useEffect, ChangeEvent } from "react";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
-import { GradientType } from "./gradient-editor";
+import { useGradientStore, GradientType } from "@/store/gradient-editor.store";
 
-type GradientAngleProps = {
-  type: GradientType;
-};
-
-export default function GradientAngle({ type }: GradientAngleProps) {
+export default function GradientAngle() {
   const knobRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const [angle, setAngle] = useState(0);
+  const type = useGradientStore((s) => s.type);
 
   const calculateAngle = (clientX: number, clientY: number) => {
     if (!knobRef.current) return null;

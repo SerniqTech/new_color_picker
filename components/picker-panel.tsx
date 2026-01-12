@@ -1,31 +1,28 @@
+import { ChangeEvent } from "react";
 import { Button } from "./ui/button";
-import { RgbaColorPicker, RgbaColor } from "react-colorful";
+import { RgbaColorPicker } from "react-colorful";
 import { Input } from "./ui/input";
 import { PiEyedropperLight } from "react-icons/pi";
 import { hexToRgba, rgbaToHex, screenEyePicker } from "@/lib/color-utils";
-import { ChangeEvent, useEffect, useState } from "react";
 import GradientAdjustableStrip from "./gradient-adjustable-strip";
-
-type PickerPanelProps = {
-  color: RgbaColor;
-  onChange: (c: RgbaColor) => void;
-};
+import { useGradientStore } from "@/store/gradient-editor.store";
 
 const CHANNELS = ["r", "g", "b", "a"] as const;
 type Channel = (typeof CHANNELS)[number];
 
-export function PickerPanel({ color, onChange }: PickerPanelProps) {
-  const [hexValue, setHexValue] = useState(() => rgbaToHex(color));
+export function PickerPanel() {
+  // const [hexValue, setHexValue] = useState(() => rgbaToHex(color));
+  const activeStopId = useGradientStore((s) => s.activeStop);
+  const stops = useGradientStore((s) => s.stops);
+  const setStopColor = useGradientStore((s) => s.setStopColor);
 
-  useEffect(() => {
-    setHexValue(rgbaToHex(color));
-  }, [color]);
+  const activeStop = stops.find((stop) => stop.id === activeStopId);
 
   const handleHexChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setHexValue(value);
-    const next = hexToRgba(value, color.a);
-    if (next) onChange(next);
+    // setHexValue(value);
+    const next = hexToRgba(value, activeStop?.color?.a ?? 1);
+    if (next) setStopColor(activeStopId, next);
   };
 
   const handleRgbaChange =
@@ -33,8 +30,8 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
       const value = Number(e.target.value);
       if (Number.isNaN(value)) return;
 
-      onChange({
-        ...color,
+      setStopColor(activeStopId, {
+        ...(activeStop?.color ?? { r: 0, g: 0, b: 0, a: 1 }),
         [channel]:
           channel === "a"
             ? Math.min(1, Math.max(0, value)) / 100
@@ -44,18 +41,21 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
 
   const handleEyeDropperClick = async () => {
     const pickedColor = await screenEyePicker();
-    if (pickedColor) onChange(pickedColor);
+    if (pickedColor) setStopColor(activeStopId, pickedColor);
   };
 
   return (
     <section className="max-w-xl px-4">
-      <GradientAdjustableStrip/>
+      <GradientAdjustableStrip />
       <h3 className="text-sm text-muted-foreground mb-2">Picker</h3>
 
       <div className="flex flex-col sm:flex-row gap-6">
         {/* Color Picker */}
         <div className="gradient-picker-one">
-          <RgbaColorPicker color={color} onChange={onChange} />
+          <RgbaColorPicker
+            color={activeStop?.color}
+            onChange={(c) => setStopColor(activeStopId, c)}
+          />
         </div>
 
         {/* Inputs */}
@@ -63,7 +63,11 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
           <div>
             <label className="text-xs text-muted-foreground">HEX</label>
             <div className="flex justify-between gap-2">
-              <Input className="w-24" value={hexValue} onChange={handleHexChange} />
+              <Input
+                className="w-24"
+                value={activeStop?.color ? rgbaToHex(activeStop?.color) : ""}
+                onChange={handleHexChange}
+              />
               <Button
                 size="icon"
                 variant="outline"
@@ -78,12 +82,18 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
           <div className="grid grid-cols-4 gap-2">
             {CHANNELS.map((c) => (
               <div key={c}>
-                <label className="text-xs text-muted-foreground">{c.toUpperCase()}</label>
+                <label className="text-xs text-muted-foreground">
+                  {c.toUpperCase()}
+                </label>
                 <Input
                   className="p-2"
                   type="number"
                   disabled={c === "a"}
-                  value={c === "a" ? Math.floor(color[c] * 100) : color[c]}
+                  value={
+                    c === "a"
+                      ? Math.floor(activeStop?.color?.[c] ?? 0 * 100)
+                      : activeStop?.color?.[c] ?? 0
+                  }
                   onChange={handleRgbaChange(c)}
                 />
               </div>
@@ -91,7 +101,10 @@ export function PickerPanel({ color, onChange }: PickerPanelProps) {
           </div>
 
           <div className="gradient-picker-two">
-            <RgbaColorPicker color={color} onChange={onChange} />
+            <RgbaColorPicker
+              color={activeStop?.color}
+              onChange={(c) => setStopColor(activeStopId, c)}
+            />
           </div>
         </div>
       </div>
