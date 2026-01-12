@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useGradientStore } from "@/store/gradient-editor.store";
 import { rgbaToHex, hexToRgba } from "@/lib/color-utils";
 import { RgbaColor } from "react-colorful";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 
 type GradientStopRowProps = {
   id: string;
@@ -28,6 +28,12 @@ export default function GradientStopRow({
   const moveStop = useGradientStore((s) => s.moveStop);
   const removeStop = useGradientStore((s) => s.removeStop);
   const setStopColor = useGradientStore((s) => s.setStopColor);
+
+  useEffect(() => {
+    if (!color) return;
+
+    setHexColor(rgbaToHex(color));
+  }, [color]);
 
   const handleHexChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -70,7 +76,6 @@ export default function GradientStopRow({
         type="number"
         min={0}
         max={100}
-        
         value={percent}
         onChange={(e) => {
           const val = e.target.value;

@@ -26,8 +26,16 @@ export function PickerPanel() {
     activeStop?.color ? rgbaToHex(activeStop.color) : ""
   );
 
+  console.log(activeStop?.color);
+
   const effectiveColor =
     draft?.stopId === activeStopId ? draft.color : activeStop?.color;
+
+  useEffect(() => {
+    if (!activeStop?.color) return;
+
+    setHexInput(rgbaToHex(activeStop.color));
+  }, [activeStop?.color]);
 
   useEffect(() => {
     if (!draft) return;
@@ -43,7 +51,7 @@ export function PickerPanel() {
     }
 
     setStopColor(activeStopId, draft.color);
-  }, [draft, activeStopId, activeStop, setStopColor]);
+  }, [draft, activeStopId, activeStop?.color, setStopColor]);
 
   const handleHexChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

@@ -12,7 +12,8 @@ import {
 } from "@/lib/color-utils";
 
 export default function GradientAdjustableStrip() {
-  const { stops, addStop, moveStop } = useGradientStore();
+  const stops = useGradientStore((s) => s.stops);
+  const addStop = useGradientStore((s) => s.addStop);
   const stripRef = useRef<HTMLDivElement>(null);
   const [stripWidth, setStripWidth] = useState(0);
 
@@ -48,7 +49,7 @@ export default function GradientAdjustableStrip() {
           color={rgbaToHex(stop.color)}
           percent={stop.percent}
           stripWidth={stripWidth}
-          onChangePercent={(p) => moveStop(stop.id, p)}
+          stripRef={stripRef}
         />
       ))}
     </div>
@@ -60,7 +61,7 @@ type GradientStopProps = {
   color: string;
   percent: number;
   stripWidth: number;
-  onChangePercent: (percent: number) => void;
+  stripRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const GradientStop = ({
@@ -68,13 +69,14 @@ const GradientStop = ({
   color,
   percent,
   stripWidth,
-  onChangePercent,
+  stripRef,
 }: GradientStopProps) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const isActive = useGradientStore((s) => s.activeStop === stopId);
   const setActiveStop = useGradientStore((s) => s.setActiveStop);
+  const moveStop = useGradientStore((s) => s.moveStop);
 
   const x = percentToPx(percent, stripWidth);
 
@@ -84,7 +86,15 @@ const GradientStop = ({
       bounds="parent"
       nodeRef={nodeRef}
       position={{ x, y: 0 }}
-      onDrag={(_, data) => onChangePercent(pxToPercent(data.x, stripWidth))}
+      onDrag={(e) => {
+        if (!stripRef.current) return;
+
+        const rect = stripRef.current.getBoundingClientRect();
+        const rawX = (e as MouseEvent).clientX - rect.left;
+        const clampedX = Math.max(0, Math.min(rawX, rect.width));
+
+        moveStop(stopId, pxToPercent(clampedX, rect.width));
+      }}
     >
       <div
         ref={nodeRef}
@@ -107,7 +117,7 @@ const GradientStop = ({
             if (val === "") return;
             const num = Number(val);
             if (!Number.isNaN(num)) {
-              onChangePercent(Math.min(100, Math.max(0, num)));
+              moveStop(stopId, Math.min(100, Math.max(0, num)));
             }
           }}
           onBlur={() => setIsEditing(false)}
