@@ -1,6 +1,6 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { RgbaColorPicker } from "react-colorful";
+import { RgbaColorPicker, RgbaColor } from "react-colorful";
 import { Input } from "./ui/input";
 import { PiEyedropperLight } from "react-icons/pi";
 import { hexToRgba, rgbaToHex, screenEyePicker } from "@/lib/color-utils";
@@ -9,20 +9,53 @@ import { useGradientStore } from "@/store/gradient-editor.store";
 
 const CHANNELS = ["r", "g", "b", "a"] as const;
 type Channel = (typeof CHANNELS)[number];
+type Draft = {
+  stopId: string;
+  color: RgbaColor;
+} | null;
 
 export function PickerPanel() {
-  // const [hexValue, setHexValue] = useState(() => rgbaToHex(color));
+  const [draft, setDraft] = useState<Draft>(null);
   const activeStopId = useGradientStore((s) => s.activeStop);
   const stops = useGradientStore((s) => s.stops);
   const setStopColor = useGradientStore((s) => s.setStopColor);
 
   const activeStop = stops.find((stop) => stop.id === activeStopId);
 
+  const [hexInput, setHexInput] = useState(() =>
+    activeStop?.color ? rgbaToHex(activeStop.color) : ""
+  );
+
+  const effectiveColor =
+    draft?.stopId === activeStopId ? draft.color : activeStop?.color;
+
+  useEffect(() => {
+    if (!draft) return;
+    if (draft.stopId !== activeStopId) return;
+
+    if (
+      draft.color.r === activeStop?.color.r &&
+      draft.color.g === activeStop?.color.g &&
+      draft.color.b === activeStop?.color.b &&
+      draft.color.a === activeStop?.color.a
+    ) {
+      return;
+    }
+
+    setStopColor(activeStopId, draft.color);
+  }, [draft, activeStopId, activeStop, setStopColor]);
+
   const handleHexChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // setHexValue(value);
-    const next = hexToRgba(value, activeStop?.color?.a ?? 1);
-    if (next) setStopColor(activeStopId, next);
+    setHexInput(value);
+
+    const parsed = hexToRgba(value, effectiveColor?.a ?? 1);
+    if (!parsed) return;
+
+    setDraft({
+      stopId: activeStopId,
+      color: parsed,
+    });
   };
 
   const handleRgbaChange =
@@ -53,8 +86,8 @@ export function PickerPanel() {
         {/* Color Picker */}
         <div className="gradient-picker-one">
           <RgbaColorPicker
-            color={activeStop?.color}
-            onChange={(c) => setStopColor(activeStopId, c)}
+            color={effectiveColor}
+            onChange={(color) => setDraft({ stopId: activeStopId, color })}
           />
         </div>
 
@@ -65,7 +98,7 @@ export function PickerPanel() {
             <div className="flex justify-between gap-2">
               <Input
                 className="w-24"
-                value={activeStop?.color ? rgbaToHex(activeStop?.color) : ""}
+                value={hexInput}
                 onChange={handleHexChange}
               />
               <Button
@@ -91,7 +124,7 @@ export function PickerPanel() {
                   disabled={c === "a"}
                   value={
                     c === "a"
-                      ? Math.floor(activeStop?.color?.[c] ?? 0 * 100)
+                      ? Math.floor((activeStop?.color?.[c] ?? 0) * 100)
                       : activeStop?.color?.[c] ?? 0
                   }
                   onChange={handleRgbaChange(c)}
@@ -102,8 +135,8 @@ export function PickerPanel() {
 
           <div className="gradient-picker-two">
             <RgbaColorPicker
-              color={activeStop?.color}
-              onChange={(c) => setStopColor(activeStopId, c)}
+              color={effectiveColor}
+              onChange={(color) => setDraft({ stopId: activeStopId, color })}
             />
           </div>
         </div>
