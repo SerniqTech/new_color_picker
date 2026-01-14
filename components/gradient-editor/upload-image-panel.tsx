@@ -62,7 +62,7 @@ export default function UploadImagePanel({
             handleFiles(e.dataTransfer.files);
           }}
           className={cn(
-            "flex h-[200px] cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed transition",
+            "flex h-50 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed transition",
             isDragging ? "border-blue-500 bg-blue-50" : "border-muted"
           )}
         >

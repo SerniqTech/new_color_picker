@@ -1,5 +1,5 @@
 import { RgbaColor } from "react-colorful";
-import { Stop } from "@/store/gradient-editor.store";
+import { Stop } from "@/components/gradient-editor/store";
 
 export function rgbaToHex({ r, g, b }: RgbaColor) {
   return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");

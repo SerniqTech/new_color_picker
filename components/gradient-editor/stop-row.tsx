@@ -4,7 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useGradientStore } from "@/store/gradient-editor.store";
+import { useGradientStore } from "@/components/gradient-editor/store";
 import { rgbaToHex, hexToRgba } from "@/lib/color-utils";
 import { RgbaColor } from "react-colorful";
 import { useState, ChangeEvent, useEffect } from "react";
@@ -15,7 +15,7 @@ type GradientStopRowProps = {
   percent: number;
 };
 
-export default function GradientStopRow({
+export default function StopRow({
   id,
   color,
   percent,

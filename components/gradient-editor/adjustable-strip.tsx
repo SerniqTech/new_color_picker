@@ -2,8 +2,8 @@
 
 import { useRef, useState, MouseEvent, useLayoutEffect } from "react";
 import Draggable from "react-draggable";
-import { Input } from "./ui/input";
-import { useGradientStore } from "@/store/gradient-editor.store";
+import { Input } from "../ui/input";
+import { useGradientStore } from "@/components/gradient-editor/store";
 import {
   percentToPx,
   pxToPercent,
@@ -11,7 +11,7 @@ import {
   rgbaToHex,
 } from "@/lib/color-utils";
 
-export default function GradientAdjustableStrip() {
+export default function AdjustableStrip() {
   const stops = useGradientStore((s) => s.stops);
   const addStop = useGradientStore((s) => s.addStop);
   const stripRef = useRef<HTMLDivElement>(null);

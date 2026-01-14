@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import ColorPickerEditor from "./color-picker-editor";
-import { GradientEditor } from "./gradient-editor";
+import ColorPickerEditor from "./color-editor";
+import GradientEditor from "./gradient-editor";
 
 export default function Hero() {
   return (

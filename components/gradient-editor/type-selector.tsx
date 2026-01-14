@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { GradientType, useGradientStore } from "@/store/gradient-editor.store";
+import { GradientType, useGradientStore } from "@/components/gradient-editor/store";
 
-export default function GradientTypeSelector() {
+export default function TypeSelector() {
   const type = useGradientStore((s) => s.type);
   const setType = useGradientStore((s) => s.setType);
 
@@ -10,7 +10,7 @@ export default function GradientTypeSelector() {
     <ToggleGroup
       type="single"
       variant="outline"
-      size='sm'
+      size="sm"
       value={type}
       onValueChange={(val) => {
         if (!val) return;

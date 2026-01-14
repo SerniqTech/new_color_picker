@@ -1,16 +1,16 @@
 import { ChangeEvent, useState, useRef } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { RgbaColorPicker } from "react-colorful";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { PiEyedropperLight } from "react-icons/pi";
 import { hexToRgba, rgbaToHex, screenEyePicker } from "@/lib/color-utils";
-import GradientAdjustableStrip from "./gradient-adjustable-strip";
-import { useGradientStore } from "@/store/gradient-editor.store";
+import AdjustableStrip from "./adjustable-strip";
+import { useGradientStore } from "@/components/gradient-editor/store";
 
 const CHANNELS = ["r", "g", "b", "a"] as const;
 type Channel = (typeof CHANNELS)[number];
 
-export function PickerPanel() {
+export default function PickerPanel() {
   const activePicker = useRef<string>(null);
   const activeStopId = useGradientStore((s) => s.activeStop);
   const stops = useGradientStore((s) => s.stops);
@@ -54,7 +54,7 @@ export function PickerPanel() {
 
   return (
     <section className="max-w-xl px-4">
-      <GradientAdjustableStrip />
+      <AdjustableStrip />
       <h3 className="text-sm text-muted-foreground mb-2">Picker</h3>
 
       <div className="flex flex-col sm:flex-row gap-6">
