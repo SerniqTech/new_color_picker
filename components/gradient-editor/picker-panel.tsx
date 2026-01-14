@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { RgbaColorPicker } from "react-colorful";
 import { Input } from "../ui/input";
 import { PiEyedropperLight } from "react-icons/pi";
-import { hexToRgba, rgbaToHex, screenEyePicker } from "@/lib/color-utils";
+import { hexaToRgba, rgbaToHexa, screenEyePicker } from "@/lib/color-utils";
 import AdjustableStrip from "./adjustable-strip";
 import { useGradientStore } from "@/components/gradient-editor/store";
 
@@ -18,7 +18,7 @@ export default function PickerPanel() {
 
   const activeStop = stops.find((stop) => stop.id === activeStopId);
 
-  const hexValue = activeStop?.color ? rgbaToHex(activeStop.color) : "";
+  const hexValue = activeStop?.color ? rgbaToHexa(activeStop.color) : "";
 
   const [hexDraft, setHexDraft] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export default function PickerPanel() {
 
     if (!value) return;
 
-    const parsed = hexToRgba(value, activeStop?.color.a ?? 1);
+    const parsed = hexaToRgba(value);
     if (!parsed) return;
     setStopColor(activeStopId, parsed);
   };
@@ -83,7 +83,7 @@ export default function PickerPanel() {
             <label className="text-xs text-muted-foreground">HEX</label>
             <div className="flex justify-between gap-2">
               <Input
-                className="w-24"
+                className="w-24 text-center px-1"
                 value={hexDraft ?? hexValue}
                 onChange={handleHexChange}
                 onBlur={() => setHexDraft(null)}

@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useGradientStore } from "@/components/gradient-editor/store";
-import { rgbaToHex, hexToRgba } from "@/lib/color-utils";
+import { rgbaToHexa, hexaToRgba } from "@/lib/color-utils";
 import { RgbaColor } from "react-colorful";
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent } from "react";
 
 type GradientStopRowProps = {
   id: string;
@@ -15,31 +15,25 @@ type GradientStopRowProps = {
   percent: number;
 };
 
-export default function StopRow({
-  id,
-  color,
-  percent,
-}: GradientStopRowProps) {
-  const initialHexColor = rgbaToHex(color);
-  const [hexColor, setHexColor] = useState(rgbaToHex(color));
+export default function StopRow({ id, color, percent }: GradientStopRowProps) {
+  const initialHexColor = rgbaToHexa(color);
+  const [hexDraft, setHexDraft] = useState<string | null>(null);
   const shouldRowsDisabled = useGradientStore((s) => s.stops.length <= 2);
-  const isActive = useGradientStore((s) => s.activeStop === id);
+  const activeStopId = useGradientStore((s) => s.activeStop);
   const setActiveStop = useGradientStore((s) => s.setActiveStop);
   const moveStop = useGradientStore((s) => s.moveStop);
   const removeStop = useGradientStore((s) => s.removeStop);
   const setStopColor = useGradientStore((s) => s.setStopColor);
 
-  useEffect(() => {
-    if (!color) return;
-
-    setHexColor(rgbaToHex(color));
-  }, [color]);
+  const hexValue = rgbaToHexa(color);
 
   const handleHexChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setHexColor(value);
+    setHexDraft(value);
 
-    const parsed = hexToRgba(value, color.a ?? 1);
+    if (!value) return;
+
+    const parsed = hexaToRgba(value);
     if (!parsed) return;
 
     setStopColor(id, parsed);
@@ -49,7 +43,7 @@ export default function StopRow({
     <div
       className={cn(
         "flex items-center gap-1 rounded-lg  p-1 transition",
-        isActive && "border-2 border-blue-500"
+        activeStopId === id && "border-2 border-blue-500"
       )}
       onClick={() => setActiveStop(id)}
     >
@@ -65,10 +59,11 @@ export default function StopRow({
 
       {/* Hex Input */}
       <Input
-        value={hexColor?.startsWith("#") ? hexColor : "#" + hexColor}
+        value={hexDraft ?? hexValue}
         onChange={handleHexChange}
-        className="w-28 font-mono text-center"
+        className="w-28 px-1 font-mono text-center"
         spellCheck={false}
+        onBlur={() => setHexDraft(null)}
       />
 
       {/* Position Input */}

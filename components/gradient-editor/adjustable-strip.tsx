@@ -7,8 +7,10 @@ import { useGradientStore } from "@/components/gradient-editor/store";
 import {
   percentToPx,
   pxToPercent,
-  buildLinearGradient,
-  rgbaToHex,
+  buildLinearGradientImages,
+  rgbaToHexa,
+  normalizeToRgba,
+  rgbaToOpaqueCss,
 } from "@/lib/color-utils";
 
 export default function AdjustableStrip() {
@@ -40,13 +42,16 @@ export default function AdjustableStrip() {
       ref={stripRef}
       onClick={handleStripClick}
       className="flex items-center relative mb-12 h-8 w-full rounded-lg shadow-[0_0_0_2px_#000] before-overlay"
-      style={{ backgroundImage: buildLinearGradient(stops) }}
+      style={{
+        backgroundImage: buildLinearGradientImages(stops),
+        backgroundSize: "100% 100%, 16px 16px",
+      }}
     >
       {stops.map((stop) => (
         <GradientStop
           key={stop.id}
           stopId={stop.id}
-          color={rgbaToHex(stop.color)}
+          color={rgbaToHexa(stop.color)}
           percent={stop.percent}
           stripWidth={stripWidth}
           stripRef={stripRef}
@@ -80,6 +85,9 @@ const GradientStop = ({
 
   const x = percentToPx(percent, stripWidth);
 
+  const rgba = normalizeToRgba(color);
+  const backgroundColor = rgba ? rgbaToOpaqueCss(rgba) : "#fff";
+
   return (
     <Draggable
       axis="x"
@@ -100,7 +108,7 @@ const GradientStop = ({
         ref={nodeRef}
         className="absolute h-11 w-4 rounded-xl border-2 border-black shadow-[inset_0_0_0_2px_#fff] cursor-move -mx-2"
         style={{
-          backgroundColor: color,
+          backgroundColor,
           outline: isActive ? "6px solid rgba(0,0,0,0.2)" : "",
         }}
         onClick={() => setActiveStop(stopId)}
