@@ -3,11 +3,11 @@
 import { useRef, useState, MouseEvent, useLayoutEffect } from "react";
 import Draggable from "react-draggable";
 import { Input } from "../ui/input";
-import { useGradientStore } from "@/components/gradient-editor/store";
+import { GradientType, useGradientStore } from "@/components/gradient-editor/store";
 import {
   percentToPx,
   pxToPercent,
-  buildLinearGradientImages,
+  buildGradientImages,
   rgbaToHexa,
   normalizeToRgba,
   rgbaToOpaqueCss,
@@ -43,7 +43,7 @@ export default function AdjustableStrip() {
       onClick={handleStripClick}
       className="flex items-center relative mb-18 h-8 w-full rounded-lg shadow-[0_0_0_2px_#000] before-overlay"
       style={{
-        backgroundImage: buildLinearGradientImages(stops),
+        backgroundImage: buildGradientImages(stops,GradientType.LINEAR,90),
         backgroundSize: "100% 100%, 16px 16px",
       }}
     >

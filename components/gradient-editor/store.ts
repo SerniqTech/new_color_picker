@@ -1,5 +1,6 @@
 import { RgbaColor } from "react-colorful";
 import { create } from "zustand";
+import { getColorAtPercent } from "@/lib/color-utils";
 
 export type Stop = {
   id: string;
@@ -8,11 +9,12 @@ export type Stop = {
 };
 
 export enum GradientType {
-  LINEAR = "LINEAR",
-  RADIAL = "RADIAL",
+  LINEAR = "linear-gradient",
+  RADIAL = "radial-gradient",
 }
 
 type GradientEditorState = {
+  angle: number;
   type: GradientType;
   activeStop: string;
   stops: Stop[];
@@ -22,6 +24,7 @@ type GradientEditorState = {
   setStopColor: (id: string, color: RgbaColor) => void;
   setType: (type: GradientType) => void;
   removeStop: (id: string) => void;
+  setAngle: (angle: number) => void;
 };
 
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
@@ -30,6 +33,7 @@ const START_ID = "start";
 const END_ID = "end";
 
 export const useGradientStore = create<GradientEditorState>((set) => ({
+  angle: 90,
   type: GradientType.LINEAR,
   activeStop: START_ID,
   stops: [
@@ -37,9 +41,9 @@ export const useGradientStore = create<GradientEditorState>((set) => ({
       id: START_ID,
       percent: 0,
       color: {
-        r: 20,
-        g: 230,
-        b: 70,
+        r: 230,
+        g: 21,
+        b: 125,
         a: 1,
       },
     },
@@ -47,30 +51,32 @@ export const useGradientStore = create<GradientEditorState>((set) => ({
       id: END_ID,
       percent: 100,
       color: {
-        r: 210,
-        g: 230,
-        b: 70,
+        r: 112,
+        g: 2,
+        b: 225,
         a: 1,
       },
     },
   ],
 
   addStop: (percent) =>
-    set((state) => ({
-      stops: [
-        ...state.stops,
-        {
-          id: crypto.randomUUID(),
-          percent: clamp(percent),
-          color: {
-            r: 220,
-            g: 20,
-            b: 70,
-            a: 1,
+    set((state) => {
+      const clampedPercent = clamp(percent);
+      const color = getColorAtPercent(state.stops, clampedPercent);
+      const id = crypto.randomUUID();
+
+      return {
+        stops: [
+          ...state.stops,
+          {
+            id,
+            color,
+            percent: clampedPercent,
           },
-        },
-      ],
-    })),
+        ],
+        activeStop: id,
+      };
+    }),
 
   moveStop: (id, percent) =>
     set((state) => ({
@@ -94,8 +100,6 @@ export const useGradientStore = create<GradientEditorState>((set) => ({
 
       const stops = state.stops.filter((s) => s.id !== id);
 
-      console.log(stops);
-
       return {
         stops,
         activeStop: state.activeStop === id ? stops[0].id : state.activeStop,
@@ -103,4 +107,5 @@ export const useGradientStore = create<GradientEditorState>((set) => ({
     }),
 
   setType: (type) => set({ type }),
+  setAngle: (angle) => set({ angle }),
 }));

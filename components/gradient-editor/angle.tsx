@@ -6,7 +6,8 @@ import { useGradientStore, GradientType } from "@/components/gradient-editor/sto
 export default function Angle() {
   const knobRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
-  const [angle, setAngle] = useState(0);
+  const angle = useGradientStore(s=>s.angle);
+  const setAngle = useGradientStore(s=>s.setAngle);
   const type = useGradientStore((s) => s.type);
 
   const calculateAngle = (clientX: number, clientY: number) => {

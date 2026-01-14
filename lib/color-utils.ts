@@ -66,16 +66,21 @@ export const pxToPercent = (x: number, width: number) =>
 export const percentToPx = (percent: number, width: number) =>
   (percent / 100) * width;
 
-export const buildLinearGradientImages = (stops: Stop[]) => {
+export const buildGradientImages = (
+  stops: Stop[],
+  type = "linear-gradient",
+  angle = 90
+) => {
   if (stops.length === 0) return "none";
 
-  const gradient = `linear-gradient(
-    to right,
-    ${stops.map((s) => `${rgbaToCss(s.color)} ${s.percent}%`).join(", ")}
+  const sorted = [...stops].sort((a, b) => a.percent - b.percent);
+
+  const gradient = `${type}(
+    ${type === "linear-gradient" ? `${angle}deg` : "circle"},
+    ${sorted.map((s) => `${rgbaToCss(s.color)} ${s.percent}%`).join(", ")}
   )`;
 
   const checkerboard = "repeating-conic-gradient(#eee 0% 25%, #ccc 0% 50%)";
-
   return `${gradient}, ${checkerboard}`;
 };
 
@@ -100,4 +105,48 @@ export function normalizeToRgba(input: ColorInput): RgbaColor | null {
 
 export function rgbaToOpaqueCss({ r, g, b }: RgbaColor) {
   return `rgb(${r}, ${g}, ${b})`;
+}
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+export function interpolateColor(
+  c1: RgbaColor,
+  c2: RgbaColor,
+  t: number
+): RgbaColor {
+  return {
+    r: Math.round(lerp(c1.r, c2.r, t)),
+    g: Math.round(lerp(c1.g, c2.g, t)),
+    b: Math.round(lerp(c1.b, c2.b, t)),
+    a: lerp(c1.a, c2.a, t),
+  };
+}
+
+export function getColorAtPercent(stops: Stop[], percent: number): RgbaColor {
+  const sorted = [...stops].sort((a, b) => a.percent - b.percent);
+
+  // Before first stop
+  if (percent <= sorted[0].percent) {
+    return sorted[0].color;
+  }
+
+  // After last stop
+  if (percent >= sorted[sorted.length - 1].percent) {
+    return sorted[sorted.length - 1].color;
+  }
+
+  // Between two stops
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const left = sorted[i];
+    const right = sorted[i + 1];
+
+    if (percent >= left.percent && percent <= right.percent) {
+      const range = right.percent - left.percent;
+      const t = (percent - left.percent) / range;
+      return interpolateColor(left.color, right.color, t);
+    }
+  }
+
+  // Fallback (should never happen)
+  return sorted[0].color;
 }

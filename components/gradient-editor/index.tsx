@@ -4,10 +4,12 @@ import PickerPanel from "./picker-panel";
 import ControlsPanel from "./controls-panel";
 import UploadImagePanel from "./upload-image-panel";
 import { useGradientStore } from "@/components/gradient-editor/store";
-import { buildLinearGradientImages } from "@/lib/color-utils";
+import { buildGradientImages } from "@/lib/color-utils";
 
 export default function GradientEditor() {
-  const { stops } = useGradientStore();
+  const stops = useGradientStore((s) => s.stops);
+  const type = useGradientStore((s) => s.type);
+  const angle = useGradientStore((s) => s.angle);
 
   return (
     <div>
@@ -16,7 +18,7 @@ export default function GradientEditor() {
         <div
           className="h-40 rounded-lg border relative"
           style={{
-            backgroundImage: buildLinearGradientImages(stops),
+            backgroundImage: buildGradientImages(stops, type, angle),
             backgroundSize: "100% 100%, 16px 16px",
           }}
         />
