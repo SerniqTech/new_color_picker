@@ -14,7 +14,7 @@ export default function GradientEditor() {
       {/* Gradient Preview */}
       <div className="pb-6">
         <div
-          className="h-36 rounded-lg border relative"
+          className="h-40 rounded-lg border relative"
           style={{
             backgroundImage: buildLinearGradientImages(stops),
             backgroundSize: "100% 100%, 16px 16px",

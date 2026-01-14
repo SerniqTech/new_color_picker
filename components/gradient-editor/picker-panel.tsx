@@ -53,77 +53,19 @@ export default function PickerPanel() {
   };
 
   return (
-    <section className="max-w-xl px-4">
-      <AdjustableStrip />
-      <h3 className="text-sm text-muted-foreground mb-2">Picker</h3>
+    <section className="max-w-xl">
+      <div className="px-8">
+        <AdjustableStrip />
+      </div>
+      <div className="px-4">
+        <h3 className="text-sm text-muted-foreground mb-2">Picker</h3>
 
-      <div className="flex flex-col sm:flex-row gap-6">
-        {/* Color Picker */}
-        <div
-          className="gradient-picker-one"
-          onMouseEnter={() => {
-            activePicker.current = "one";
-          }}
-          onMouseLeave={() => {
-            activePicker.current = null;
-          }}
-        >
-          <RgbaColorPicker
-            color={activeStop?.color}
-            onChange={(c) => {
-              if (activePicker.current === "one")
-                return setStopColor(activeStopId, c);
-            }}
-          />
-        </div>
-
-        {/* Inputs */}
-        <div className="flex-1 space-y-4">
-          <div>
-            <label className="text-xs text-muted-foreground">HEX</label>
-            <div className="flex justify-between gap-2">
-              <Input
-                className="w-24 text-center px-1"
-                value={hexDraft ?? hexValue}
-                onChange={handleHexChange}
-                onBlur={() => setHexDraft(null)}
-              />
-              <Button
-                size="icon"
-                variant="outline"
-                className="border-primary text-primary"
-                onClick={handleEyeDropperClick}
-              >
-                <PiEyedropperLight />
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2">
-            {CHANNELS.map((c) => (
-              <div key={c}>
-                <label className="text-xs text-muted-foreground">
-                  {c.toUpperCase()}
-                </label>
-                <Input
-                  className="p-2"
-                  type="number"
-                  disabled={c === "a"}
-                  value={
-                    c === "a"
-                      ? Math.floor((activeStop?.color?.[c] ?? 0) * 100)
-                      : activeStop?.color?.[c] ?? 0
-                  }
-                  onChange={handleRgbaChange(c)}
-                />
-              </div>
-            ))}
-          </div>
-
+        <div className="flex flex-col sm:flex-row gap-6">
+          {/* Color Picker */}
           <div
-            className="gradient-picker-two"
+            className="gradient-picker-one"
             onMouseEnter={() => {
-              activePicker.current = "two";
+              activePicker.current = "one";
             }}
             onMouseLeave={() => {
               activePicker.current = null;
@@ -132,10 +74,72 @@ export default function PickerPanel() {
             <RgbaColorPicker
               color={activeStop?.color}
               onChange={(c) => {
-                if (activePicker.current === "two")
+                if (activePicker.current === "one")
                   return setStopColor(activeStopId, c);
               }}
             />
+          </div>
+
+          {/* Inputs */}
+          <div className="flex-1 space-y-4">
+            <div>
+              <label className="text-xs text-muted-foreground">HEX</label>
+              <div className="flex justify-between gap-2">
+                <Input
+                  className="w-24 text-center px-1"
+                  value={hexDraft ?? hexValue}
+                  onChange={handleHexChange}
+                  onBlur={() => setHexDraft(null)}
+                />
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="border-primary text-primary"
+                  onClick={handleEyeDropperClick}
+                >
+                  <PiEyedropperLight />
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2">
+              {CHANNELS.map((c) => (
+                <div key={c}>
+                  <label className="text-xs text-muted-foreground">
+                    {c.toUpperCase()}
+                  </label>
+                  <Input
+                    className="p-2"
+                    type="number"
+                    disabled={c === "a"}
+                    value={
+                      c === "a"
+                        ? Math.floor((activeStop?.color?.[c] ?? 0) * 100)
+                        : activeStop?.color?.[c] ?? 0
+                    }
+                    onChange={handleRgbaChange(c)}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div
+              className="gradient-picker-two"
+              onMouseEnter={() => {
+                activePicker.current = "two";
+              }}
+              onMouseLeave={() => {
+                activePicker.current = null;
+              }}
+            >
+              <RgbaColorPicker
+                color={activeStop?.color}
+                onChange={(c) => {
+                  if (activePicker.current === "two")
+                    return setStopColor(activeStopId, c);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
