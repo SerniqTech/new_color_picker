@@ -13,6 +13,14 @@ export enum GradientType {
   RADIAL = "radial-gradient",
 }
 
+export type GradientPreset = {
+  id: string;
+  name: string;
+  type: GradientType;
+  angle: number;
+  stops: Omit<Stop, "id">[];
+};
+
 type GradientEditorState = {
   angle: number;
   type: GradientType;
@@ -25,6 +33,7 @@ type GradientEditorState = {
   setType: (type: GradientType) => void;
   removeStop: (id: string) => void;
   setAngle: (angle: number) => void;
+  applyPreset: (preset: GradientPreset) => void;
 };
 
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
@@ -108,4 +117,17 @@ export const useGradientStore = create<GradientEditorState>((set) => ({
 
   setType: (type) => set({ type }),
   setAngle: (angle) => set({ angle }),
+  applyPreset: (preset) => {
+    const stops = preset.stops.map((stop) => ({
+      ...stop,
+      id: crypto.randomUUID(),
+    }));
+
+    set(() => ({
+      type: preset.type,
+      angle: preset.angle,
+      stops,
+      activeStop: stops[0].id,
+    }));
+  },
 }));
