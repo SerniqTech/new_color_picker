@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased overflow-x-hidden`}>
         <div className="flex flex-col min-h-screen bg-primary/5">
           <Header />
-          <main className="pt-16 w-full h-full px-6 md:px-12 lg:px-24">
+          <main className="pt-10 w-full h-full px-6 md:px-12 lg:px-24">
             {children}
           </main>
           <Footer />

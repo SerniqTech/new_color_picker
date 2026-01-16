@@ -53,7 +53,7 @@ export default function PickerPanel() {
   };
 
   return (
-    <section className="max-w-xl">
+    <section className="max-w-xl flex-2">
       <div className="px-8">
         <AdjustableStrip />
       </div>
