@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import ImageDropzone from "../image-dropzone";
-import { rgbaToCss, rgbaToHexa } from "@/lib/color-utils";
+import { rgbaToHexa } from "@/lib/color-utils";
 import type { RgbaColor } from "react-colorful";
+import { useGradientStore } from "./store";
 
 const MAG_SIZE = 80; // visible magnifier size
 const ZOOM = 2; // zoom factor
@@ -18,6 +19,9 @@ export default function ImageColorSelection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sourceCanvasRef = useRef<HTMLCanvasElement>(null);
   const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const setStopColor = useGradientStore((s) => s.setStopColor);
+  const activeStopId = useGradientStore((s) => s.activeStop);
 
   /* cleanup blob URL */
   useEffect(() => {
@@ -133,6 +137,23 @@ export default function ImageColorSelection() {
 
     setCursor({ x: data.cx, y: data.cy });
     drawMagnifier(data.px, data.py);
+
+    // Pick color on hover
+    const src = sourceCanvasRef.current;
+    if (!src) return;
+
+    const ctx = src.getContext("2d");
+    if (!ctx) return;
+
+    const pixel = ctx.getImageData(data.px, data.py, 1, 1).data;
+    const color = {
+      r: pixel[0],
+      g: pixel[1],
+      b: pixel[2],
+      a: pixel[3] / 255,
+    };
+
+    setPickedColor(color);
   };
 
   const handlePickColor = (e: React.MouseEvent) => {
@@ -147,12 +168,16 @@ export default function ImageColorSelection() {
 
     const pixel = ctx.getImageData(data.px, data.py, 1, 1).data;
 
-    setPickedColor({
+    const color = {
       r: pixel[0],
       g: pixel[1],
       b: pixel[2],
       a: pixel[3] / 255,
-    });
+    };
+
+    setPickedColor(color);
+
+    setStopColor(activeStopId, color);
   };
 
   /* ------------------ UI ------------------ */
